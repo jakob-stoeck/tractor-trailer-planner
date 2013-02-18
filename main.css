@@ -1,0 +1,48 @@
+body {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	background-color:rgb(223,219,212);
+}
+canvas { position:absolute; z-index:-1; }
+@-webkit-keyframes jiggle {
+	0% {
+		-webkit-transform: rotate(-1deg);
+	}
+	50% {
+		-webkit-transform: rotate(1deg);
+	}
+}
+.jiggly {
+	-webkit-animation: jiggle 0.2s infinite;
+	-webkit-transform: rotate(-1deg);
+}
+#truck {
+	z-index: 10;
+}
+#visibility {
+	opacity: 0.2;
+}
+@-webkit-keyframes heartbeat {
+	0% { -webkit-transform: scale(1); }
+	30% { -webkit-transform: scale(1); }
+	40% { -webkit-transform: scale(1.05); }
+	50% { -webkit-transform: scale(1); }
+	60% { -webkit-transform: scale(1); }
+	70% { -webkit-transform: scale(1.03); }
+	80% { -webkit-transform: scale(1); }
+	100% { -webkit-transform: scale(1); }
+}
+.navbar .brand:hover .love {
+	color: #b60000;
+}
+.navbar .brand:hover {
+	color: #aaa;
+	-webkit-animation-name: 'heartbeat';
+	-webkit-animation-duration: 900ms;
+	-webkit-transform-origin:70% 70%;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+}
+#settings { display: none; }

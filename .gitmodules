@@ -1,0 +1,10 @@
+[submodule "mocha"]
+	path = test/mocha
+	url = git://github.com/visionmedia/mocha.git
+[submodule "astar"]
+	path = lib/javascript-astar
+	url = git://github.com/bgrins/javascript-astar.git
+
+[submodule "test/chai"]
+	path = test/chai
+	url = git://github.com/chaijs/chai.git

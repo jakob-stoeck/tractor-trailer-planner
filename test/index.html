@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Mocha</title>
+		<link rel="stylesheet" href="mocha/mocha.css" />
+	</head>
+	<body>
+		<div id="mocha"></div>
+		<div id="testzone">
+			<canvas id="canvas"></canvas>
+		</div>
+		<script src="mocha/mocha.js"></script>
+		<script src="chai/chai.js"></script>
+		<script src="../lib/jquery-1.7.1.min.js"></script>
+		<script src="../lib/knockout-2.1.0.js"></script>
+		<script src="../lib/bootstrap/js/bootstrap.min.js"></script>
+		<!-- // <script src="../lib/compiled_visibility.js"></script> -->
+		<script src="../lib/requestAnimationFrame.js"></script>
+		<!-- // <script src="../lib/javascript-astar/graph.js"></script> -->
+		<!-- // <script src="../lib/javascript-astar/astar.js"></script> -->
+		<script src="../build/test/mocks.js"></script>
+		<script src="../build/helper/canvas.js"></script>
+		<script src="../build/helper/helpers.js"></script>
+		<script src="../build/app/config.js"></script>
+		<script src="../build/app/functions.js"></script>
+		<script src="../build/app/rrt.js"></script>
+		<!-- // <script src="../build/app/discretize.js"></script> -->
+		<!-- // <script src="../build/app/visibility.js"></script> -->
+		<!-- // <script src="../build/app/astar.js"></script> -->
+		<script src="../build/app/truck.js"></script>
+		<!-- // <script src="../build/app/sensor_system.js"></script> -->
+		<script src="../build/app/edgedetection.js"></script>
+		<script>
+			mocha.setup({ui: 'bdd'});
+			expect = chai.expect;
+		</script>
+		<script src="../build/test/test.js"></script>
+		<script>
+			mocha.run();
+		</script>
+	</body>
+</html>

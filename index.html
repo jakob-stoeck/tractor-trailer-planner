@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Innotruck Planner</title>
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" type="text/css">
+		<link rel="stylesheet" href="main.css" type="text/css">
+	</head>
+	<body>
+		<div class="navbar">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="brand" href="#">We <span class="love">&hearts;</span> Innotruck</a>
+				<ul class="nav">
+					<li>
+						<div id="input-mode" class="btn-group" data-toggle="buttons-radio">
+							<button id="goal" type="button" class="btn active">Goal</button>
+							<button id="obstacle" type="button" class="btn">Obstacle</button>
+						</div>&nbsp;
+					</li>
+					<li><button class="btn" id="settings-button"><i class="icon-wrench"></i> Settings</button>&nbsp;</li>
+					<li><button class="btn" id="play" data-toggle="button"><i class="icon-play"></i> Autopilot</button></li>
+					<li><a>GPS: 48.06 N, 011.63 E</a></li>
+					<li><a><output data-bind="text:wallNumber">0</output> Walls detected</a></li>
+					<li><a><output data-bind="text:frameRate">0</output> fps</a></li>
+				</ul>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span3" id="settings">
+					<form class="well">
+						<div id="manual_keyboard">
+							<button type="button" id="up">&uarr;</button>
+							<button type="button" id="left">&larr;</button>
+							<button type="button" id="right">&rarr;</button>
+							<button type="button" id="down">&darr;</button>
+						</div>
+						<label>Steer</label>
+						<input data-bind="value:steer, event: { change: window.drawManual }, attr: { max: PIHALF }" min="0" step="0.05" class="span9" id="steer" type="range">
+						<output data-bind="text:steer"></output>
+
+						<label>Steps</label>
+						<input data-bind="value:steps, event: { change: window.drawManual }" min="1" max="100" step="1" class="span9" id="steps" type="range">
+						<output data-bind="text:steps"></output>
+
+						<label>Speed</label>
+						<input data-bind="value:speed, event: { change: window.drawManual }" min="0.1" max="2" step="0.1" class="span9" id="speed" type="range">
+						<output data-bind="text:speed"></output>
+
+						<label>Search Max Nodes</label>
+						<input data-bind="value:searchMax" min="0" max="10000" step="100" class="span9" id="searchMax" type="range">
+						<output data-bind="text:searchMax"></output>
+
+						<label>Min Goal Distance</label>
+						<input data-bind="value:goalMin" min="0" max="100" step="1" class="span9" id="goalMin" type="range">
+						<output data-bind="text:goalMin"></output>
+
+						<label>Direction Change Penalty</label>
+						<input data-bind="value:rChangePenalty" min="0" max="1000" step="1" class="span9" id="rChangePenalty" type="range">
+						<output data-bind="text:rChangePenalty"></output>
+
+						<h3>Edge Detection</h3>
+						<label>ed.maxDistance</label>
+						<input data-bind="value:ed.maxDistance" min="1" max="300" step="1" class="span9" id="ed.maxDistance" type="range">
+						<output data-bind="text:ed.maxDistance"></output>
+
+						<label>ed.maxDistanceToLine</label>
+						<input data-bind="value:ed.maxDistanceToLine" min="1" max="50" step="1" class="span9" id="ed.maxDistanceToLine" type="range">
+						<output data-bind="text:ed.maxDistanceToLine"></output>
+
+						<label>ed.minLength</label>
+						<input data-bind="value:ed.minLength" min="2" max="100" step="1" class="span9" id="ed.minLength" type="range">
+						<output data-bind="text:ed.minLength"></output>
+
+						<label>ed.minR2</label>
+						<input data-bind="value:ed.minR2" min="0.5" max="1" step="0.01" class="span9" id="ed.minR2" type="range">
+						<output data-bind="text:ed.minR2"></output>
+
+						<label>ed.frequency</label>
+						<input data-bind="value:ed.frequency" min="0" max="1000" step="1" class="span9" id="ed.frequency" type="range">
+						<output data-bind="text:ed.frequency"></output>
+					</form>
+				</div>
+				<div class="span9" id="container">
+
+				</div>
+			</div>
+		</div>
+		<script src="lib/jquery-1.7.1.min.js"></script>
+		<script src="lib/knockout-2.1.0.js"></script>
+		<script src="lib/bootstrap/js/bootstrap.min.js"></script>
+		<script src="lib/compiled_visibility.js"></script>
+		<script src="lib/requestAnimationFrame.js"></script>
+		<!-- <script src="lib/javascript-astar/graph.js"></script> -->
+		<!-- <script src="lib/javascript-astar/astar.js"></script> -->
+		<script src="build/helper/canvas.js"></script>
+		<script src="build/app/config.js"></script>
+		<script src="build/app/localConfig.js"></script>
+		<script src="build/app/functions.js"></script>
+		<script src="build/app/app.js"></script>
+		<script src="build/helper/helpers.js"></script>
+		<script src="build/app/discretize.js"></script>
+		<!-- // <script src="build/app/edgedetection.js"></script> -->
+		<script src="build/app/visibility.js"></script>
+		<!-- <script src="build/app/astar.js"></script> -->
+		<script src="build/app/rrt.js"></script>
+		<script src="build/app/truck.js"></script>
+		<script src="build/app/hmi.js"></script>
+		<script src="build/app/sensor_system.js"></script>
+		<script src="build/app/input.js"></script>
+		<script>
+			$.fn.jiggle = function() {
+				this.addClass('jiggly');
+				setTimeout(function(that) {
+					return that.removeClass('jiggly');
+				}, 800, this);
+			};
+			$('#settings-button').click(function() {
+				$('#settings').toggle('fast');
+			});
+			var arrows = { left: 37, up: 38, right: 39, down: 40 }
+			$('#manual_keyboard').on('mousedown touchstart', 'button', function(e) {
+				var keyEvent = jQuery.Event("keydown");
+				keyEvent.which = arrows[this.id];
+				keyEvent.keyCode = arrows[this.id];
+				$(document).trigger(keyEvent);
+				console.info(keyEvent);
+				e.preventDefault();
+			});
+			$('#manual_keyboard').on('mouseup touchcancel', 'button', function(e) {
+				var keyEvent = jQuery.Event("keyup");
+				keyEvent.which = arrows[this.id];
+				keyEvent.keyCode = arrows[this.id];
+				$(document).trigger(keyEvent);
+				e.preventDefault();
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,29 @@
+digraph G {
+	subgraph cluster_procedures {
+		label=Procedures
+		color=lightgrey
+		style=filled
+		Joystick
+		Wheels
+		Laser
+		Camera
+	}
+	subgraph cluster_sensors {
+		label=Sensors
+		color=lightgrey
+		style=filled
+		"Driver Input"
+		"Odometrics"
+		Movement
+	}
+Joystick -> "Driver Input" -> "Sensor System"
+Wheels -> Odometrics -> "Sensor System"
+Laser -> Movement -> "Sensor System"
+Camera -> Movement
+Camera -> Discretize
+Laser -> Discretize -> "Edge Detection"
+"Edge Detection" -> "Path Planning (+ Coll Detection)" [label="Environment Transformation"]
+"Sensor System" -> "Path Planning (+ Coll Detection)" [label="Path + Goal Transformation"]
+"Path Planning (+ Coll Detection)" -> HMI [label="Path, Edges, Deviation"]
+HMI -> "Path Planning (+ Coll Detection)" [label="Goal"]
+}
