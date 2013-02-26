@@ -47,12 +47,11 @@ setInterval ->
 	sensorSystem.update()
 	delta.update()
 	truck.update()
-	# joystick.update()
+	joystick.update()
 , 10
 
 # slow updates
 setInterval ->
-	# joystick.updateSlow()
 	edgeDetection.update()
 , 1000
 
@@ -62,7 +61,7 @@ draw = ->
 	truck.draw()
 	waypoints.draw()
 	trajectory.draw()
-	# joystick.draw()
+	joystick.draw()
 	frameRate.draw()
 	requestAnimFrame draw
 draw()

@@ -250,7 +250,7 @@ drawPath = (path, color) ->
 
 
 # trivial path search
-window.bfs = (start, goal, translationalDistance=rrtConfig.translationalDistance*10, rotationalDistance=rrtConfig.rotationalDistance*2) ->
+window.bfs = (start, goal, translationalDistance=rrtConfig.translationalDistance*10, rotationalDistance=rrtConfig.rotationalDistance*2, lengthOfPath=40, returnConfig=false) ->
 	rotDist = Infinity
 	startpoints = []
 	steps = 20
@@ -258,7 +258,6 @@ window.bfs = (start, goal, translationalDistance=rrtConfig.translationalDistance
 	j = 0
 	best = null
 	accuracy = 0.01
-	lengthOfPath = 40
 	maxGrowth = lengthOfPath * steps * Math.abs(truck.U_PHI_MAX[1]-truck.U_PHI_MAX[0])/accuracy
 	# from start in all possible directions
 	# preferring angles near to the current on
@@ -270,7 +269,16 @@ window.bfs = (start, goal, translationalDistance=rrtConfig.translationalDistance
 	# for angle in [start.phi..truck.U_PHI_MAX[1]] by accuracy
 		# searchAngles.push angle
 	for s in [1,-1]
+		# prefer start configuration
+		startpoints.push
+			x: start.x
+			y: start.y
+			theta: start.theta
+			theta1: start.theta1
+			s: s
+			phi: start.phi
 		for phi in searchAngles
+			# all other possible start configurations
 			startpoints.push
 				x: start.x
 				y: start.y
@@ -294,6 +302,8 @@ window.bfs = (start, goal, translationalDistance=rrtConfig.translationalDistance
 				break
 			startpoints.push conf
 		i++
+	if returnConfig
+		return best
 	if best
 		conf =
 			x: start.x
@@ -311,7 +321,6 @@ window.bfs = (start, goal, translationalDistance=rrtConfig.translationalDistance
 				break if equals conf, goal, translationalDistance, rotationalDistance
 			else
 				break
-		console.info 'something found!'
 		return path.reverse()
 	return null
 

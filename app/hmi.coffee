@@ -63,6 +63,11 @@ window.joystick = {
 	maxSteps: 10
 	dirty: true
 	ctx: ctxInput
+	imgIs: new Image()
+	imgShould: new Image()
+	init: () ->
+		@imgIs.src = '/images/joystick-is.png'
+		@imgShould.src = '/images/joystick-should.png'
 	setConf: (conf) ->
 		if conf
 			@conf.phi = conf.phi
@@ -74,46 +79,43 @@ window.joystick = {
 		return unless waypoints.isActive()
 		# find next best waypoint
 		absoluteConfig = relativeToAbsolute truck.conf
-		if equals absoluteConfig, waypoints.current(), 100, 0.2
+		if equals absoluteConfig, waypoints.current(), 200, 0.2
 			# arrived at one waypoint
-			waypoints.next()
-	updateSlow: ->
-		return unless waypoints.isActive()
-		# find best action to active waypoint
-		absoluteConfig = relativeToAbsolute truck.conf
-		if waypoints.current()
-			# which action to take for the next waypoint
-			absoluteConfig.phi = waypoints.current().phi
-			# FIXME joystick
-			nextActions = bfs absoluteConfig, waypoints.current(), 100, 0.2
-			if nextActions
-				nextConf = nextActions.last()
+			if equals absoluteConfig, waypoints.path.last(), 1000, 0.2
+				waypoints.init()
 			else
-				# truck is off from path, recalculate a path and disable waypoints
-				# planner.motion absoluteToRelative(waypoints.path.last()), truck.conf
-				# alert 'off path'
-				# waypoints.init()
+				waypoints.next()
+		if waypoints.current()
+			@setConf waypoints.current()
 		else
 			# no waypoint anymore, arrived at goal
+			@setConf @conf.phi = 0
+			@setConf @conf.s = 0
 			waypoints.init()
-		@setConf nextConf
 	draw: ->
-		@ctx.clearRect 500, 500, 210, 200
-		@ctx.strokeRect 500, 500, 210, 200
 		# draw user config
+		size = 367
+		margin = 450
+		@ctx.clearRect margin-1,margin-1,size+1, size/2
+		if (@conf.s != 0)
+			@drawJoystick @conf.phi, @conf.s, true
 		@drawJoystick -window.u_phi, window.u_s
 		# return unless @dirty
 		# @dirty = false
 		# draw wanted config
-		if (@conf.s != 0)
-			@drawJoystick @conf.phi, @conf.s, true
 	drawJoystick: (phi, s, wanted=false) ->
+		size = 367
+		margin = 450
 		steeringPercent = phi/truck.U_PHI_MAX[1]
-		width = 200
-		@ctx.fillStyle = if wanted then '#f00' else '#000'
-		@ctx.fillRect 500 + width/2 + steeringPercent * width/2, 500 + (if wanted then 50 else 0), 10, 100
-		@ctx.fillRect 500 + (if s < 0 then 0 else width/2), 500 + (if wanted then 10 else 0), width/2, 10
+		@ctx.save()
+		@ctx.translate size/2+margin, size/2+margin
+		@ctx.rotate phi
+		@ctx.translate -size/2, -size/2
+		img = if wanted then @imgShould else @imgIs
+		@ctx.drawImage img, 0, 0
+		@ctx.restore()
 }
+joystick.init()
 
 window.waypoints = {
 	path: []
@@ -121,7 +123,15 @@ window.waypoints = {
 	ctx: ctxPath
 	running: false
 	init: (path=[]) ->
-		@path = path
+		@path = []
+		length = path.length
+		# smooth next step
+		for p,i in path
+			if i < length-3
+				avg = (path[i].phi+path[i+1].phi+path[i+2].phi)/3
+				p.phi = avg
+			p.phi = -p.phi # we have a wrong leading sign in the path planner
+			@path.push p
 		@cursor = 0
 		@ctx.clearRect 0, 0, 800, 800
 		return

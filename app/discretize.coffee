@@ -77,10 +77,9 @@ window.map = {
 		ctxMap.rotate delta.theta
 		ctxMap.translate -center.x-deltaX, -center.y-deltaY
 		ctxMap.drawImage @img, 0, 0
-		# hide text to the bottom right (triggers wall detection)
-		hideX = 320
-		hideY = 625
-		ctxMap.fillRect hideX, hideY, @tileSize-hideX, @tileSize-hideY
+		# hide text to the bottom right and left (triggers wall detection)
+		ctxMap.fillRect 320, 625, @tileSize-320, @tileSize-625
+		ctxMap.fillRect 0, 610, 62, @tileSize
 		ctxMap.restore()
 	draw: ->
 		return unless @tmpX != delta.x || @tmpY != delta.y || @tmpTheta != delta.theta
