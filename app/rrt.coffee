@@ -360,25 +360,3 @@ window.rrtConfig = {
 # ko.applyBindings(rrtConfig)
 
 window.planner = new Nonholomonic if rrtConfig.bidirectional then rrtBalancedBidirectional else rrt
-
-# TODO
-# max inflections hinzufügen
-# use actual starting point √
-# make goal angle choosable √
-# Point Flooding bei schwer zugänglichen Goals
-# Knoten flaggen -> Brücke
-# Trailer Formel Doppel-Integral?
-
-# Collision detection
-# Karte bauen, Use Case realistisch, mit dm
-# Smooth Paths
-
-# Ziel ist ungenau definiert, +- ein Meter macht nichts, bi-direktional fängt aber an genauem qGoal an. Vereinbar?
-# Odometrie nehmen, Karte bleibt stehen
-# Parkgeschwindigkeit: Wie viel Drift gibt es, LKW, Actros
-# 0.5s Geschwindigkeitsvektor
-
-# Marcus und Chao Audi, Roboterplanung
-
-# TODO
-# bfs should run in O(1)

@@ -100,10 +100,12 @@ window.waypoints = {
 	cursor: 0
 	ctx: ctxPath
 	running: false
-	init: (path=[]) ->
+	init: (path=[], goal=null) ->
 		@path = []
+		@goal = goal
 		length = path.length
-		# smooth next step
+		# smoothes phi for the next step.  random planners may have small spikes
+		# which are smoothed that way
 		for p,i in path
 			if i < length-3
 				avg = (path[i].phi+path[i+1].phi+path[i+2].phi)/3
@@ -157,7 +159,14 @@ window.waypoints = {
 		@ctx.translate center.x, center.y
 		@ctx.rotate delta.theta
 		@ctx.translate -center.x-delta.x, -center.y-delta.y
-		@drawPath @path
+		@ctx.strokeStyle = '#000'
+		@drawPath @path, 10
+		# show real goal.  that might differ from the path end point if easier
+		# paths are preferred over exact goal arrival.
+		@ctx.beginPath()
+		@ctx.strokeStyle = '#00f'
+		renderCar @ctx, @goal if @goal
+		@ctx.stroke()
 		@ctx.restore()
 	drawPath: (path, every=20, lock=false) ->
 		from = 0
@@ -172,10 +181,8 @@ window.waypoints = {
 				if (!every or i % every == 0)
 					renderCar @ctx, curr
 				i++
-		if (!every) then renderCar @ctx, path[from]
+		renderCar @ctx, path[from] if (!every)
 		renderCar @ctx, @current()
-		# @ctx.rect @current().x-20, @current().y-20, 40, 40
-		@ctx.stroke()
 		renderCar @ctx, path[to]
 		@ctx.stroke()
 }
@@ -290,7 +297,7 @@ canvas.on 'mouseup touchend', (e) ->
 				goal = new Conf startDrag.x, startDrag.y, rotation, rotation
 				path = planner.motion(start, goal, edgeDetection.walls).
 				map (e) -> relativeToAbsolute e
-				waypoints.init path
+				waypoints.init path, goal
 	ctxDraft.clearRect 0, 0, config.canvasWidth, config.canvasHeight
 	canvas.off 'mousemove touchmove'
 	e.preventDefault()
