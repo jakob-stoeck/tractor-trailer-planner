@@ -1,29 +1,7 @@
-# Mikrobewegungen am Ziel
-# Velocity Vector aus Laser
-# Anweisungen an Fahrer mit Joystick
-# Trennung zwischen Gas geben und lenken
-# 1. Schick + Simulierte Daten
-# -Collision detection in RRT-
-# -Drive mode in RRT-
-# sensor input from laser and odometrics
-# show future trajectory
-# endless map
-# smooth paths, foremost between bi-directional paths
-# smooth input
-# manual obstacles im unbekannten raum
-# 2. No-go-areas, virtuelle obstacles
-# 3. Joystick Unterstützung wichtig, relative Anzeige, Progress bar
-# 4. Lernmodus
-# 5. Menschen simulieren, geschlossene Parkplätze, Höfe
-# sticky keys
-# wand schliessen
-
-
 # save absolute coordinates of obstacles and path
 # deviate on sensor fusion
 # draw on buffer with relative coordinates
 # draw buffer on ctxPath with deviation
-
 ctxDraft = cnvs.append 'draft', container, config.canvasWidth, config.canvasHeight
 ctxBuffer = cnvs.create config.canvasWidth, config.canvasHeight
 

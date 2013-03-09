@@ -2,19 +2,6 @@
 absFloor = (x) ->
 	if x < 0 then Math.ceil(x) else Math.floor(x)
 
-window.delta = {
-	x: 0
-	y: 0
-	theta: 0
-	update: () ->
-		# deltas build up a global positioning, useful in simulation mode
-		@theta += sensorSystem.conf.theta+PIHALF
-		s = Math.sin @theta
-		c = Math.cos @theta
-		@x += sensorSystem.conf.x * c + sensorSystem.conf.y * s
-		@y += sensorSystem.conf.x * -s + sensorSystem.conf.y * c
-}
-
 manualObstacles = {
 	obstacles: []
 	ctx: ctxMap

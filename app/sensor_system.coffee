@@ -10,7 +10,6 @@ window.edgeDetection = {
 	update: ->
 		@worker.postMessage { imageData: get32BitImageData ctxMap }
 }
-edgeDetection.init()
 
 window.sensorSystem =
 	conf: new Conf 0, 0, 0, 0
@@ -25,6 +24,19 @@ window.sensorSystem =
 		if -Math.PI < angle < PIHALF/32
 			@conf = conf
 			@angle = angle
+
+window.delta = {
+	x: 0
+	y: 0
+	theta: 0
+	update: () ->
+		# deltas build up a global positioning, useful in simulation mode
+		@theta += sensorSystem.conf.theta+PIHALF
+		s = Math.sin @theta
+		c = Math.cos @theta
+		@x += sensorSystem.conf.x * c + sensorSystem.conf.y * s
+		@y += sensorSystem.conf.x * -s + sensorSystem.conf.y * c
+}
 
 app.on 'angle.lidar', (e, angle) ->
 	#eventInfo e

@@ -25,7 +25,7 @@ app.on 'keyup', (e) ->
 		when arrows.up, arrows.down
 			window.u_s = 0
 
-frameRate = {
+window.frameRate = {
 	lastTime: +new Date
 	frames: 0
 	i: 0
@@ -39,29 +39,3 @@ frameRate = {
 			@i = 0
 			@frames = 0
 }
-
-# Game Loop
-
-# update
-setInterval ->
-	sensorSystem.update()
-	delta.update()
-	truck.update()
-	joystick.update()
-, 10
-
-# slow updates
-setInterval ->
-	edgeDetection.update()
-, 1000
-
-# draw
-draw = ->
-	map.draw()
-	truck.draw()
-	waypoints.draw()
-	trajectory.draw()
-	joystick.draw()
-	frameRate.draw()
-	requestAnimFrame draw
-draw()
