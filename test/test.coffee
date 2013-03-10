@@ -205,6 +205,12 @@ describe 'Planner', ->
 				if nextMove.length > 0 then lastConf = nextMove[0]
 			# small differences are due to the bucketing of start theta1 angles
 			expect(equals goalGet, lastConf, 100, 0.05).true
+		it 'should normalize rotations out of [0,-pi]', ->
+			goal = new Conf 400, 200, -1.55, -1.55
+			goal1 = new Conf 400, 200, -1.55-2*Math.PI, -1.55-2*Math.PI
+			goalGet = lookupTable.get lookupTable.startConf, goal
+			goalGet1 = lookupTable.get lookupTable.startConf, goal1
+			expect(goalGet).eql goalGet1
 		it 'should lookup straight correctly', ->
 			newPos = new Conf 400, 200, -PIHALF, -PIHALF
 			straightSteps = lookupTable.get center, newPos
