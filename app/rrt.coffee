@@ -50,12 +50,14 @@ class Planner
 		@borders = []
 	distance: (q,v) ->
 	setGoal: (conf) ->
-	setBorders: (borders) ->
-		@borders = borders
-	rotationalDistance: (q,v) -> 0
+	setBorders: (borders) -> @borders = borders
+	distRot: (q,v) -> 0
 	nearestVertex: (q,G) ->
 	randConf: () ->
 	newConf: (qNear, qRand, deltaQ) -> # moves into direction of qRand by deltaQ
+	beforeSearch: () ->
+	afterStep: (step, qNear, qRand) ->
+	afterSearch: (qGoal) ->
 
 class Holonomic extends Planner
 	# two-dimensional euclid
@@ -75,9 +77,9 @@ class Holonomic extends Planner
 			if d_i < d
 				vNear = i
 				d = d_i
-				r = @rotationalDistance q, v
+				r = @distRot q, v
 			else if d_i == d
-				r_i = @rotationalDistance q, v
+				r_i = @distRot q, v
 				if r_i < r
 					vNear = i
 		vNear
@@ -132,7 +134,7 @@ class Holonomic extends Planner
 		path
 
 class Nonholomonic extends Holonomic
-	rotationalDistance: (q, v) ->
+	distRot: (q, v) ->
 		rotational = Math.abs(q.theta-v.theta)/Math.PI
 		rotational2 = Math.abs(q.theta1-v.theta1)/Math.PI
 		dist = rotational + rotational2
@@ -166,16 +168,17 @@ grow = (G, deltaQ, qGoal, growRandom, useActionPath=true) ->
 		qNews = truck.legalMoves qNear, planner.borders
 		for q in qNews
 			G.addEdge iNear, G.addVertex q
+	planner.afterStep qNear, qRand, path
 	qNear
 
-window.equals = (q0, q1, translationalDistance=0, rotationalDistance=0) ->
-	dist = planner.distance(q0, q1)
-	if q0.theta? and q0.theta1? and q1.theta? and q1.theta1?
-		rot = planner.rotationalDistance(q0, q1)
+window.equals = (q0, q1, distTrans=0, distRot=0) ->
+	dist = planner.distance q0, q1
+	if q0.theta? && q0.theta1? && q1.theta? && q1.theta1?
+		rot = planner.distRot q0, q1
 	else
 		# rotation is undefined
 		rot = 0
-	if dist <= translationalDistance && rot <= rotationalDistance
+	if dist <= distTrans && rot <= distRot
 		true
 	else
 		false
@@ -195,14 +198,14 @@ rrtBalancedBidirectional = (K, deltaQ, goalBias) ->
 		target = if k%goalBias then null else @goal
 		qNew = grow G, deltaQ, @goal, k%goalBias
 		qNewR = grow H, deltaQ, qNew, 0, false
-		if equals qNew, @goal, rrtConfig.translationalDistance, rrtConfig.rotationalDistance
+		if equals qNew, @goal, rrtConfig.distTrans, rrtConfig.distRot
 			# found path without the need to concatenate the second one
 			found = true
 			unidirectional = true
 			break
 		# connecting the two branches is not supported.  the second branch is only
 		# used, when no unidirectional way is found
-		if equals qNew, qNewR, rrtConfig.translationalDistance, rrtConfig.rotationalDistance
+		if equals qNew, qNewR, rrtConfig.distTrans, rrtConfig.distRot
 			found = true
 			break
 		# balance
@@ -250,7 +253,7 @@ drawPath = (path, color) ->
 
 
 # trivial path search
-window.bfs = (start, goal, translationalDistance=rrtConfig.translationalDistance*10, rotationalDistance=rrtConfig.rotationalDistance*2, lengthOfPath=40, returnConfig=false) ->
+window.bfs = (start, goal, distTrans=rrtConfig.distTrans*10, distRot=rrtConfig.distRot*2, lengthOfPath=40, returnConfig=false) ->
 	rotDist = Infinity
 	startpoints = []
 	steps = 20
@@ -296,7 +299,7 @@ window.bfs = (start, goal, translationalDistance=rrtConfig.translationalDistance
 		if next.length > 0
 			conf = next[0]
 			# memorize best config so far
-			if equals conf, goal, translationalDistance, rotationalDistance
+			if equals conf, goal, distTrans, distRot
 				best = conf
 				# exits on first best, probably not optimal
 				break
@@ -318,7 +321,7 @@ window.bfs = (start, goal, translationalDistance=rrtConfig.translationalDistance
 			conf = truck.legalMoves(conf, planner.borders, steps, [conf.s], [conf.phi])[0]
 			if conf
 				path.push conf
-				break if equals conf, goal, translationalDistance, rotationalDistance
+				break if equals conf, goal, distTrans, distRot
 			else
 				break
 		return path.reverse()
@@ -329,34 +332,60 @@ rrt = (K, deltaQ, goalBias) ->
 	G.addVertex @start
 	path = []
 	k = 0
-	# ctxTruck.beginPath()
+	@beforeSearch()
 	while k < K
 		qNew = grow G, deltaQ, @goal, k%goalBias
-		# renderCar ctxTruck, qNew
-		if equals qNew, @goal, rrtConfig.translationalDistance, rrtConfig.rotationalDistance
+		if equals qNew, @goal, rrtConfig.distTrans, rrtConfig.distRot
 			path = G.traverseUp().reverse()
 			break
 		k++
-	# ctxTruck.stroke()
+	@afterSearch @goal
 	path
 
-window.rrtConfig = {
-	deltaQ: window.config.steps() # how far to move with each step
-	K: window.config.searchMax() # number of steps
+rrtConfig = {
+	bidirectional: window.config.advanced()
 	bigIsGreedy: true
 	collisionDetectionTries: 1
+	deltaQ: window.config.steps() # how far to move with each step
+	distRot: 0.2
+	distTrans: 1000
 	goalBias: 10 # ever n-th time use goal as qRand;
-	rotationalDistance: 0.5
+	K: window.config.searchMax() # number of steps
+	maxRounds: 1 # if no path is found stop after n rounds
+	rounds: 20 # optimum planning rounds to search to compare paths
 	showAllPaths: true
 	showCollisionDetection: true
-	showTruckPosition: true
+	showTruckPosition: false
 	stopWhenFound: true
-	translationalDistance: 10000
-	rounds: 20 # optimum planning rounds to search to compare paths
-	maxRounds: 10 # if no path is found stop after n rounds
-	bidirectional: window.config.advanced()
 	tryTrivial: true
 }
 # ko.applyBindings(rrtConfig)
 
-window.planner = new Nonholomonic if rrtConfig.bidirectional then rrtBalancedBidirectional else rrt
+window.planner = new Nonholomonic rrt
+
+rectCenter = (ctx,x,y,size) ->
+	ctx.rect x-size/2, y-size/2, size, size
+
+if rrtConfig.showTruckPosition
+	planner.beforeSearch = ->
+		ctxTruck.clearRect 0,0,800,800
+		ctxTruck.beginPath()
+		ctxTruck.fillStyle = '#0f0'
+	planner.afterStep = (qNear, qRand, path) ->
+		# growth step
+		# found with an action path
+		ctxTruck.strokeStyle = if path.length > 0 then '#f00' else '#000'
+		ctxTruck.beginPath()
+		renderCar ctxTruck, path[0] if path.length > 0
+		renderCar ctxTruck, qNear
+		ctxTruck.stroke()
+		# intermediary goal
+		ctxPath.clearRect 0,0,800,800
+		rectCenter ctxPath, qRand.x, qRand.y, 15
+		ctxPath.fill()
+		debugger
+	planner.afterSearch = (qGoal) ->
+		ctxTruck.beginPath()
+		ctxTruck.strokeStyle = '#00f'
+		renderCar ctxTruck, qGoal
+		ctxTruck.stroke()
