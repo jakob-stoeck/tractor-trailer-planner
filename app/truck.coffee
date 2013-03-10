@@ -24,6 +24,12 @@ window.truck = {
 			y += u_s * Math.sin theta
 			theta += (u_s/@L) * Math.tan u_phi
 			theta1 += (u_s/@L1) * Math.sin theta-theta1
+		# normalize rotation so that it is always counter-clockwise (could also be
+		# clockwise, but not both at the same time)
+		theta %= PI2
+		theta1 %= PI2
+		theta -= PI2 if (theta > 0)
+		theta1 -= PI2 if (theta1 > 0)
 		x: Math.round x
 		y: Math.round y
 		theta: theta
@@ -42,7 +48,9 @@ window.truck = {
 		for direction in directions
 			for steer in steers
 				nextConf = @step conf.x, conf.y, conf.theta, conf.theta1, direction, steer, repeatStep
-				if Math.abs(nextConf.theta1-nextConf.theta) < PIHALF
+				# FIXME this is not correct. e.g. -5π/4+π is not feasible
+				angle = Math.abs(nextConf.theta1-nextConf.theta)
+				if angle < PIHALF || angle-PI2 < PIHALF
 					if borders.length > 0
 						outlines = @outlines nextConf
 					else

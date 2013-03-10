@@ -154,7 +154,7 @@ grow = (G, deltaQ, qGoal, growRandom, useActionPath=true) ->
 	path = []
 	if useActionPath
 		path = planner.actionPath qNear, qGoal, planner.borders
-	if path.length > 0
+	if path.length > 0 && equals path.last(), qGoal, rrtConfig.distTrans, rrtConfig.distRot
 		# action path to goal exists
 		vertex1 = iNear
 		qNear = path.last()
@@ -347,11 +347,11 @@ rrtConfig = {
 	bigIsGreedy: true
 	collisionDetectionTries: 1
 	deltaQ: window.config.steps() # how far to move with each step
-	distRot: 0.2
+	distRot: 0.5
 	distTrans: 1000
 	goalBias: 10 # ever n-th time use goal as qRand;
 	K: window.config.searchMax() # number of steps
-	maxRounds: 1 # if no path is found stop after n rounds
+	maxRounds: 5 # if no path is found stop after n rounds
 	rounds: 20 # optimum planning rounds to search to compare paths
 	showAllPaths: true
 	showCollisionDetection: true
@@ -388,4 +388,5 @@ if rrtConfig.showTruckPosition
 		ctxTruck.beginPath()
 		ctxTruck.strokeStyle = '#00f'
 		renderCar ctxTruck, qGoal
+		console.info 'goal', @goal
 		ctxTruck.stroke()

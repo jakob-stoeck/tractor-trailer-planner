@@ -30,6 +30,7 @@ window.center = new Conf 400, 400, -PIHALF, -PIHALF
 # 				Conf
 window.lookupTable =
 	table: null
+	accuracy: 0.05
 	startConf:
 		x: 400
 		y: 400
@@ -42,8 +43,8 @@ window.lookupTable =
 	hash: (conf) ->
 		x: @round conf.x, 20
 		y: @round conf.y, 20
-		theta: @round conf.theta, 0.05, 2
-		theta1: @round conf.theta1, 0.05, 2
+		theta: @round conf.theta, @accuracy, 2
+		theta1: @round conf.theta1, @accuracy, 2
 	normalize: (start, goal) ->
 		# bring relative goal coordinates in current absolute coordinates
 		# which are based on deltas from the last known starting point
@@ -71,7 +72,7 @@ window.lookupTable =
 		start.theta1 = @normalizeAngle start.theta1
 		goal.theta = @normalizeAngle goal.theta
 		goal.theta1 = @normalizeAngle goal.theta1
-		startingAngle = @round start.theta1, 0.05, 2
+		startingAngle = @round start.theta1, @accuracy, 2
 		normGoal = @normalize start, goal
 		bucket = @hash normGoal
 		if isNaN bucket.theta1
@@ -82,13 +83,16 @@ window.lookupTable =
 				keys = Object.keys value
 				value[keys[0]]
 		else
-			@table[startingAngle]?[bucket.x]?[bucket.y]?[bucket.theta1]
+			angles = @table[startingAngle]?[bucket.x]?[bucket.y]
+			if angles
+				# choose the nearest angle in the lookup table
+				angles[nearestNumber bucket.theta1, Object.keys angles]
 	draw: (theta) ->
 		@build() if @table == null
 		ctxTruck.save()
 		ctxTruck.clearRect 0,0,800,800
 		ctxTruck.beginPath()
-		startingAngle = @round @normalizeAngle(theta), 0.05, 2
+		startingAngle = @round @normalizeAngle(theta), @accuracy, 2
 		for x,rest of @table[startingAngle]
 			for y,rest1 of rest
 				for theta1,conf of rest1
@@ -102,14 +106,14 @@ window.lookupTable =
 	build: () ->
 		# theta is always -pi/2, theta1 varies depending on the starting position
 		@table = {}
-		maxSteps = 50
+		maxSteps = 20
 		direction = [1, -1]
 		# every tractor starting angle between [0,-pi]
-		for theta1 in [-3.15...0] by 0.05
+		for theta1 in [-3.15...0] by @accuracy
 			theta1 = Number theta1.toFixed 2
 			# step in every direction and many turning rates
 			for s in direction
-				for phi in [-0.55...0.55] by 0.05
+				for phi in [-0.55...0.55] by @accuracy
 					phi = Number phi.toFixed 2
 					# reset to start config
 					newConf =
@@ -136,7 +140,7 @@ window.nearestNumber = (myNumber, numbers) ->
 	diff = Infinity
 	nearest = null
 	for n in numbers
-		localDiff = Math.abs myNumber - n
+		localDiff = Math.abs myNumber - Number n
 		if localDiff < diff
 			diff = localDiff
 			nearest = n

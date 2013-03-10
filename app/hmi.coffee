@@ -293,6 +293,7 @@ canvas.on 'mouseup touchend', (e) ->
 				app.trigger 'obstacle.lidar', [startDrag, endDrag].map (e) -> relativeToAbsolute e
 			when MODE_GOAL
 				rotation = -Math.atan2 -(startDrag.y-endDrag.y), startDrag.x-endDrag.x
+				rotation -= PI2 if rotation > 0
 				start = new Conf center.x, center.y, center.theta, sensorSystem.angle, u_s, u_phi
 				goal = new Conf startDrag.x, startDrag.y, rotation, rotation
 				path = planner.motion(start, goal, edgeDetection.walls).

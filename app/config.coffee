@@ -19,7 +19,7 @@ window.config =
 	steps: ko.observable 20
 	speed: ko.observable 0.2
 	direction: ko.observable 1
-	searchMax: ko.observable 3000
+	searchMax: ko.observable 5000
 	goalMin: ko.observable 10
 	rChangePenalty: ko.observable 10
 	raytraceAngles: ko.observable 200

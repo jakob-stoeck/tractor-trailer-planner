@@ -66,7 +66,7 @@ window.map = {
 		ctxMap.drawImage @img, 0, 0
 		# hide text to the bottom right and left (triggers wall detection)
 		ctxMap.fillRect 320, 625, @tileSize-320, @tileSize-625
-		ctxMap.fillRect 0, 610, 62, @tileSize
+		ctxMap.fillRect 0, 610, 62, @tileSize-610
 		ctxMap.restore()
 	draw: ->
 		return unless @tmpX != delta.x || @tmpY != delta.y || @tmpTheta != delta.theta
