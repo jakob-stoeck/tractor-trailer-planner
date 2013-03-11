@@ -9,6 +9,6 @@ setInterval ->
 draw = ->
 	truck.draw()
 	waypoints.draw()
-	# trajectory.draw()
+	trajectory.draw()
 	requestAnimFrame draw
 draw()

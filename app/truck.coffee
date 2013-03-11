@@ -19,7 +19,7 @@ window.truck = {
 		@dirty = false
 		renderCar3d @ctx, @conf
 	step: (x, y, theta, theta1, u_s=1, u_phi=0, runs=1) ->
-		while runs-- > 0
+		while runs-- > 0 and absDiff(theta, theta1) <= PIHALF
 			x += u_s * Math.cos theta
 			y += u_s * Math.sin theta
 			theta += (u_s/@L) * Math.tan u_phi
@@ -49,8 +49,7 @@ window.truck = {
 			for steer in steers
 				nextConf = @step conf.x, conf.y, conf.theta, conf.theta1, direction, steer, repeatStep
 				# FIXME this is not correct. e.g. -5π/4+π is not feasible
-				angle = Math.abs(nextConf.theta1-nextConf.theta)
-				if angle < PIHALF || angle-PI2 < PIHALF
+				if absDiff(nextConf.theta, nextConf.theta1) <= PIHALF
 					if borders.length > 0
 						outlines = @outlines nextConf
 					else

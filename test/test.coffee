@@ -151,6 +151,16 @@ describe "Computer Graphics", ->
 			intercept = 1
 			d = distanceToLine p, slope, intercept
 			expect(d).equal 4
+	describe 'absDiff()', ->
+		it 'should return the absolute degree between two radians', ->
+			expect(absDiff 0,0).eql 0, 'valid 0'
+			expect(absDiff -PIHALF,-PIHALF).eql 0, 'valid 1'
+			expect(absDiff -PI2,-PI2).eql 0, 'valid 2'
+			expect(absDiff -PIHALF,0).eql PIHALF, 'valid 3'
+			expect(absDiff 0,-PIHALF).eql PIHALF, 'valid 4'
+			expect(absDiff 0,-1*Math.PI/4).eql Math.PI/4, 'valid 5'
+			expect(absDiff 0,-3*Math.PI/4).eql 3*Math.PI/4, 'invalid 0'
+			expect(absDiff 0,-5*Math.PI/4).eql 3*Math.PI/4, 'invalid 1'
 describe 'Planner', ->
 	describe 'equals', ->
 		it 'should see the same nodes as equal', ->

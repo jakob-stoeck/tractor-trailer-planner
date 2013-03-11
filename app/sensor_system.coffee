@@ -20,9 +20,8 @@ window.sensorSystem =
 		conf = truck.step 0, 0, -PIHALF, @angle, u_s, u_phi, config.steps()
 		together = conf.theta + conf.theta1
 		angle = together + PIHALF
-		if -Math.PI < angle < PIHALF/32
-			@conf = conf
-			@angle = angle
+		@conf = conf
+		@angle = angle
 
 window.delta = {
 	x: 0

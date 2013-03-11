@@ -7,6 +7,8 @@ window.lineSegmentIntersect = (p1, p2, p3, p4) ->
 	ub = ((p2[0]-p1[0]) * (p1[1]-p3[1])-(p2[1]-p1[1]) * (p1[0]-p3[0])) / div
 	(0 <= ua <= 1 && 0 <= ub <= 1)
 
+window.absDiff = (rad, rad1) -> Math.PI-Math.abs(Math.PI-Math.abs rad-rad1)
+
 window.euclid = (p, q) ->
 	Math.sqrt(Math.pow(p.x-q.x, 2) + Math.pow(p.y-q.y, 2))
 
