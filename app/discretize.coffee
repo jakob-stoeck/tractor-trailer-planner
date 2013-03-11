@@ -2,7 +2,7 @@
 absFloor = (x) ->
 	if x < 0 then Math.ceil(x) else Math.floor(x)
 
-manualObstacles = {
+manualObstacles =
 	obstacles: []
 	ctx: ctxMap
 	add: (start, end) ->
@@ -20,9 +20,10 @@ manualObstacles = {
 			@ctx.lineTo obs[1].x, obs[1].y
 		@ctx.stroke()
 		@ctx.restore()
-}
 
-window.map = {
+window.map =
+	ctx: ctxMap
+	ctxBuffer: cnvs.create 800, 800
 	img: new Image()
 	jumpAt: 220
 	tileSize: 640
@@ -57,17 +58,18 @@ window.map = {
 		else
 			cb()
 	drawImage: (deltaX, deltaY, x=0, y=0) ->
-		ctxMap.save()
-		ctxMap.fillStyle = 'rgb(223,219,212)'
-		ctxMap.fillRect x, y, config.canvasWidth, config.canvasHeight
-		ctxMap.translate center.x, center.y
-		ctxMap.rotate delta.theta
-		ctxMap.translate -center.x-deltaX, -center.y-deltaY
-		ctxMap.drawImage @img, 0, 0
+		@ctxBuffer.save()
+		@ctxBuffer.fillStyle = 'rgb(223,219,212)'
+		@ctxBuffer.fillRect x, y, config.canvasWidth, config.canvasHeight
+		@ctxBuffer.translate center.x, center.y
+		@ctxBuffer.rotate delta.theta
+		@ctxBuffer.translate ~~(-center.x-deltaX), ~~(-center.y-deltaY)
+		@ctxBuffer.drawImage @img, 0, 0
 		# hide text to the bottom right and left (triggers wall detection)
-		ctxMap.fillRect 320, 625, @tileSize-320, @tileSize-625
-		ctxMap.fillRect 0, 610, 62, @tileSize-610
-		ctxMap.restore()
+		@ctxBuffer.fillRect 320, 625, @tileSize-320, @tileSize-625
+		@ctxBuffer.fillRect 0, 610, 62, @tileSize-610
+		@ctxBuffer.restore()
+		@ctx.drawImage @ctxBuffer.canvas, 0, 0
 	draw: ->
 		return unless @tmpX != delta.x || @tmpY != delta.y || @tmpTheta != delta.theta
 		@tmpX = delta.x
@@ -82,7 +84,6 @@ window.map = {
 			# center new tiles
 			@drawImage delta.x-@jumpAt*@hori, delta.y-@jumpAt*@vert
 			# manualObstacles.draw()
-}
 
 app.on 'obstacle.lidar', (e, start, end) ->
 	#eventInfo e

@@ -1,4 +1,4 @@
-window.edgeDetection = {
+window.edgeDetection =
 	walls: []
 	init: ->
 		@worker = new Worker '/build/app/edgedetection.js'
@@ -9,7 +9,6 @@ window.edgeDetection = {
 		, false
 	update: ->
 		@worker.postMessage { imageData: get32BitImageData ctxMap }
-}
 
 window.sensorSystem =
 	conf: new Conf 0, 0, 0, 0

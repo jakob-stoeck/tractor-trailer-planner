@@ -41,6 +41,7 @@ window.joystick = {
 	maxSteps: 10
 	dirty: true
 	ctx: ctxInput
+	ctxBuffer: cnvs.create 800, 800
 	imgIs: new Image()
 	imgShould: new Image()
 	init: () ->
@@ -74,7 +75,7 @@ window.joystick = {
 		# draw user config
 		size = 367
 		margin = 450
-		@ctx.clearRect margin-1,margin-1,size+1, size/2
+		@ctxBuffer.clearRect margin-1,margin-1,size+1, size/2
 		if (@conf.s != 0)
 			@drawJoystick @conf.phi, @conf.s, true
 		@drawJoystick -window.u_phi, window.u_s
@@ -85,13 +86,15 @@ window.joystick = {
 		size = 367
 		margin = 450
 		steeringPercent = phi/truck.U_PHI_MAX[1]
-		@ctx.save()
-		@ctx.translate size/2+margin, size/2+margin
-		@ctx.rotate phi
-		@ctx.translate -size/2, -size/2
+		@ctxBuffer.save()
+		@ctxBuffer.translate size/2+margin, size/2+margin
+		@ctxBuffer.rotate phi
+		@ctxBuffer.translate -size/2, -size/2
 		img = if wanted then @imgShould else @imgIs
-		@ctx.drawImage img, 0, 0
-		@ctx.restore()
+		@ctxBuffer.drawImage img, 0, 0
+		@ctxBuffer.restore()
+		@ctx.clearRect margin-1,margin-1,size+1, size/2
+		@ctx.drawImage @ctxBuffer.canvas, 0, 0
 }
 joystick.init()
 
@@ -163,10 +166,10 @@ window.waypoints = {
 		@drawPath @path, 10
 		# show real goal.  that might differ from the path end point if easier
 		# paths are preferred over exact goal arrival.
-		@ctx.beginPath()
-		@ctx.strokeStyle = '#00f'
-		renderCar @ctx, @goal if @goal
-		@ctx.stroke()
+		# @ctx.beginPath()
+		# @ctx.strokeStyle = '#00f'
+		# renderCar @ctx, @goal if @goal
+		# @ctx.stroke()
 		@ctx.restore()
 	drawPath: (path, every=20, lock=false) ->
 		from = 0
@@ -189,13 +192,14 @@ window.waypoints = {
 
 window.trajectory = {
 	ctx: ctxTrajectory
+	ctxBuffer: cnvs.create 800, 800
 	tmpPhi: 0
 	tmpX: -1
 	tmpY: -1
 	draw: ->
 		conf = truck.conf
 		# return unless @tmpX != delta.x || @tmpY != delta.y || @tmpPhi != u_phi
-		@ctx.clearRect 0, 0, 800, 800
+		@ctxBuffer.clearRect 0, 0, 800, 800
 		@tmpPhi = u_phi
 		@tmpX = delta.x
 		@tmpY = delta.y
@@ -210,7 +214,7 @@ window.trajectory = {
 		if config.showAllFeasiblePaths()
 			for s in direction
 				# step in every direction and many turning rates
-				@ctx.beginPath()
+				@ctxBuffer.beginPath()
 				for phi in [truck.U_PHI_MAX[0]..truck.U_PHI_MAX[1]] by 0.05
 					# reset to start config
 					newConf = conf
@@ -219,34 +223,36 @@ window.trajectory = {
 						g = if s < 0 then 98 else 200
 						b = if s < 0 then 98 else 0
 						a = 0.1#1/(1+i*0.4)
-						@ctx.strokeStyle = "rgba(#{r}, #{g}, #{b}, #{a})"
+						@ctxBuffer.strokeStyle = "rgba(#{r}, #{g}, #{b}, #{a})"
 						nextMove = truck.legalMoves(newConf, edgeDetection.walls, steps, [s], [phi])
 						if nextMove.length > 0
 							# if no collision detected move on
 							newConf = nextMove[0]
 						else
 							break
-						renderCar @ctx, newConf
-				@ctx.stroke()
+						renderCar @ctxBuffer, newConf
+				@ctxBuffer.stroke()
 
 		# draw current trajectory
 		for s in direction
 			newConf = conf
-			@ctx.beginPath()
+			@ctxBuffer.beginPath()
 			for i in [0..20]
 				r = if s < 0 then 255 else 255
 				g = if s < 0 then 255 else 255
 				b = if s < 0 then 0 else 0
 				a = 0.4#1/(1+i*0.4)
-				@ctx.strokeStyle = "rgba(#{r}, #{g}, #{b}, #{a})"
+				@ctxBuffer.strokeStyle = "rgba(#{r}, #{g}, #{b}, #{a})"
 				nextMove = truck.legalMoves(newConf, edgeDetection.walls, steps, [s], [newConf.phi])
 				if nextMove.length > 0
 					# if no collision detected move on
 					newConf = nextMove[0]
 				else
 					break
-				renderCar @ctx, newConf
-			@ctx.stroke()
+				renderCar @ctxBuffer, newConf
+			@ctxBuffer.stroke()
+		@ctx.clearRect 0, 0, 800, 800
+		@ctx.drawImage @ctxBuffer.canvas, 0, 0
 }
 
 window.artboard = {
