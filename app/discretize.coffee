@@ -83,7 +83,7 @@ window.map =
 		@loadImage =>
 			# center new tiles
 			@drawImage delta.x-@jumpAt*@hori, delta.y-@jumpAt*@vert
-			# manualObstacles.draw()
+			manualObstacles.draw()
 
 app.on 'obstacle.lidar', (e, start, end) ->
 	#eventInfo e
