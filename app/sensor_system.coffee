@@ -13,15 +13,15 @@ window.edgeDetection =
 window.sensorSystem =
 	conf: new Conf 0, 0, 0, 0
 	angle: -PIHALF
+	angle2: -PIHALF
 	update: ->
 		# uses global sensors for speed and steer
 		@updateManual u_s, u_phi
 	updateManual: (u_s, u_phi) ->
-		conf = truck.step 0, 0, -PIHALF, @angle, u_s, u_phi, config.steps()
-		together = conf.theta + conf.theta1
-		angle = together + PIHALF
+		conf = truck.step 0, 0, -PIHALF, @angle, u_s, u_phi, config.steps(), @angle2
+		@angle = conf.theta + conf.theta1 + PIHALF
+		@angle2 = conf.theta + conf.theta2 + PIHALF
 		@conf = conf
-		@angle = angle
 
 window.delta = {
 	x: 0

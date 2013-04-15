@@ -144,7 +144,7 @@ class Nonholomonic extends Holonomic
 		m_canvas.width = 800
 		m_canvas.height = 800
 		m_ctx = m_canvas.getContext '2d'
-		renderCar m_ctx, new Conf q.x, q.y, q.theta, q.theta1
+		renderCar m_ctx, new Conf q.x, q.y, q.theta, q.theta1, q.theta2
 
 grow = (G, deltaQ, qGoal, growRandom, useActionPath=true) ->
 	qRand = if growRandom then planner.randConf() else qGoal
@@ -244,89 +244,6 @@ drawPath = (path, color) ->
 	ctx.stroke()
 	ctx.restore()
 
-# todo
-# searchAngles = [truck.U_PHI_MAX[0]..truck.U_PHI_MAX[1]] by accuracy
-# orderByNearestAngle = (phi) ->
-# 	for angle, i in searchAngles
-# 		if phi >= angle then break
-# 	# i now is the index of the nearest angle, interweave left and right
-
-
-# trivial path search
-window.bfs = (start, goal, distTrans=rrtConfig.distTrans*10, distRot=rrtConfig.distRot*2, lengthOfPath=40, returnConfig=false) ->
-	rotDist = Infinity
-	startpoints = []
-	steps = 20
-	i = 0
-	j = 0
-	best = null
-	accuracy = 0.01
-	maxGrowth = lengthOfPath * steps * Math.abs(truck.U_PHI_MAX[1]-truck.U_PHI_MAX[0])/accuracy
-	# from start in all possible directions
-	# preferring angles near to the current on
-	searchAngles = []
-	for angle in [truck.U_PHI_MAX[0]..truck.U_PHI_MAX[1]] by accuracy
-		searchAngles.push angle
-	# for angle in [start.phi..truck.U_PHI_MAX[0]] by -accuracy
-		# searchAngles.push angle
-	# for angle in [start.phi..truck.U_PHI_MAX[1]] by accuracy
-		# searchAngles.push angle
-	for s in [1,-1]
-		# prefer start configuration
-		startpoints.push
-			x: start.x
-			y: start.y
-			theta: start.theta
-			theta1: start.theta1
-			s: s
-			phi: start.phi
-		for phi in searchAngles
-			# all other possible start configurations
-			startpoints.push
-				x: start.x
-				y: start.y
-				theta: start.theta
-				theta1: start.theta1
-				s: s
-				phi: phi
-	while i < startpoints.length
-		if i > maxGrowth
-			console.info i, 'nodes reached'
-			break
-		s = startpoints[i]
-		# grow chosen configuration
-		next = truck.legalMoves(s, planner.borders, steps, [s.s], [s.phi])
-		if next.length > 0
-			conf = next[0]
-			# memorize best config so far
-			if equals conf, goal, distTrans, distRot
-				best = conf
-				# exits on first best, probably not optimal
-				break
-			startpoints.push conf
-		i++
-	if returnConfig
-		return best
-	if best
-		conf =
-			x: start.x
-			y: start.y
-			theta: start.theta
-			theta1: start.theta1
-			s: best.s
-			phi: best.phi
-		path = []
-		path.push conf
-		for i in [0..100]
-			conf = truck.legalMoves(conf, planner.borders, steps, [conf.s], [conf.phi])[0]
-			if conf
-				path.push conf
-				break if equals conf, goal, distTrans, distRot
-			else
-				break
-		return path.reverse()
-	return null
-
 rrt = (K, deltaQ, goalBias) ->
 	G = new Graph()
 	G.addVertex @start
@@ -351,7 +268,7 @@ rrtConfig = {
 	distTrans: 1000
 	goalBias: 10 # ever n-th time use goal as qRand;
 	K: window.config.searchMax() # number of steps
-	maxRounds: 5 # if no path is found stop after n rounds
+	maxRounds: 1 # if no path is found stop after n rounds
 	rounds: 20 # optimum planning rounds to search to compare paths
 	showAllPaths: true
 	showCollisionDetection: true

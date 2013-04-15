@@ -21,6 +21,7 @@ window.Conf = (x, y, theta, theta1, s, phi) ->
 	theta1: theta1
 	s: s
 	phi: phi
+	theta2: arguments[6] if arguments.length > 6
 
 window.center = new Conf 400, 400, -PIHALF, -PIHALF
 
@@ -38,6 +39,7 @@ window.lookupTable =
 		y: 400
 		theta: -PIHALF
 		theta1: -PIHALF
+		theta2: -PIHALF
 	round: (number, power=10, precision=0) ->
 		Number (power * Math.round number/power).toFixed precision
 	normalizeAngle: (angle) ->
@@ -47,6 +49,7 @@ window.lookupTable =
 		y: @round conf.y, 20
 		theta: @round conf.theta, @accuracy, 2
 		theta1: @round conf.theta1, @accuracy, 2
+		theta2: @round conf.theta2, @accuracy, 2
 	normalize: (start, goal) ->
 		# bring relative goal coordinates in current absolute coordinates
 		# which are based on deltas from the last known starting point
@@ -65,7 +68,7 @@ window.lookupTable =
 		c = Math.cos delta.theta
 		px = x* c + y*s - delta.x + @startConf.x
 		py = x*-s + y*c + delta.y + @startConf.y
-		c = new Conf px, py, goal.theta-delta.theta, goal.theta1-delta.theta
+		c = new Conf px, py, goal.theta-delta.theta, goal.theta1-delta.theta, 0, 0, goal.theta2-delta.theta1
 		c
 	get: (start, goal) ->
 		@build() if @table == null
@@ -123,6 +126,7 @@ window.lookupTable =
 						y: @startConf.y
 						theta: @startConf.theta
 						theta1: theta1
+						theta2: theta1
 					for i in [0..maxSteps]
 						nextMove = truck.legalMoves newConf, [], null, [s], [phi]
 						if nextMove.length > 0

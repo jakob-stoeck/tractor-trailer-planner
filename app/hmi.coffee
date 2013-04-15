@@ -17,10 +17,7 @@ window.relativeToAbsolute = (p) ->
 	c = Math.cos delta.theta
 	px = (x * c + y * s)+delta.x+center.x
 	py = (x * -s + y * c)+delta.y+center.y
-	c = new Conf px, py, p.theta-delta.theta, p.theta1-delta.theta
-	c.s = p.s
-	c.phi = p.phi
-	c
+	new Conf px, py, p.theta-delta.theta, p.theta1-delta.theta, p.s, p.phi, p.theta2-delta.theta
 # todo use for obstacles
 window.absoluteToRelative = (p) ->
 	x = p.x+delta.x+center.x
@@ -29,7 +26,7 @@ window.absoluteToRelative = (p) ->
 	c = Math.cos delta.theta
 	px = (x * c + y * s)+delta.x+center.x
 	py = (x * -s + y * c)+delta.y+center.y
-	c = new Conf x, y, -PIHALF, p.theta1+center.theta+delta.theta
+	new Conf x, y, -PIHALF, p.theta1+center.theta+delta.theta
 
 window.joystick = {
 	conf: {
@@ -300,7 +297,7 @@ canvas.on 'mouseup touchend', (e) ->
 			when MODE_GOAL
 				rotation = -Math.atan2 -(startDrag.y-endDrag.y), startDrag.x-endDrag.x
 				rotation -= PI2 if rotation > 0
-				start = new Conf center.x, center.y, center.theta, sensorSystem.angle, u_s, u_phi
+				start = new Conf center.x, center.y, center.theta, sensorSystem.angle, u_s, u_phi, sensorSystem.angle2
 				goal = new Conf startDrag.x, startDrag.y, rotation, rotation
 				path = planner.motion(start, goal, edgeDetection.walls).
 				map (e) -> relativeToAbsolute e
