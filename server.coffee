@@ -7,7 +7,7 @@ config = require './config'
 
 convertToApiUrl = (path) ->
 	p = {
-		center: path.substring('/maps/'.length, path.length-'.png'.length)
+		center: path.substring('maps/'.length, path.length-'.png'.length)
 		zoom: 21
 		size: [640,640].join('x')
 		maptype: 'roadmap'
@@ -15,7 +15,7 @@ convertToApiUrl = (path) ->
 		style: 'feature:all|element:labels|visibility:off'
 		key: config.googleMapsKey
 	}
-	'/maps/api/staticmap?style=feature:road|visibility:off&'+querystring.stringify(p)
+	'maps/api/staticmap?style=feature:road|visibility:off&'+querystring.stringify(p)
 download = (host, path, saveTo, finishCb, errorCb) ->
 	options =
 		host: host

@@ -62,7 +62,7 @@
         center = [config.lat() - this.vert * vertD, config.lon() + this.hori * horiD].join();
         this.img.onload = cb;
         this.img.crossOrigin = '';
-        return this.img.src = '/maps/' + center + '.png';
+        return this.img.src = 'maps/' + center + '.png';
       } else {
         return cb();
       }

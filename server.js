@@ -18,7 +18,7 @@
     var p;
 
     p = {
-      center: path.substring('/maps/'.length, path.length - '.png'.length),
+      center: path.substring('maps/'.length, path.length - '.png'.length),
       zoom: 21,
       size: [640, 640].join('x'),
       maptype: 'roadmap',
@@ -26,7 +26,7 @@
       style: 'feature:all|element:labels|visibility:off',
       key: config.googleMapsKey
     };
-    return '/maps/api/staticmap?style=feature:road|visibility:off&' + querystring.stringify(p);
+    return 'maps/api/staticmap?style=feature:road|visibility:off&' + querystring.stringify(p);
   };
 
   download = function(host, path, saveTo, finishCb, errorCb) {

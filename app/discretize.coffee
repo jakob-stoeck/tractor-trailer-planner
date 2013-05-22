@@ -46,8 +46,7 @@ window.map =
 			center = [config.lat()-@vert*vertD,config.lon()+@hori*horiD].join()
 			@img.onload = cb
 			@img.crossOrigin = ''
-			# @img.src = '/maps/' + 'style=feature:road|visibility:off&' + $.param(p) + '.png'
-			@img.src = '/maps/'+center+'.png'
+			@img.src = 'maps/'+center+'.png'
 		else
 			cb()
 	drawImage: (deltaX, deltaY, x=0, y=0) ->
