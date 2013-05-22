@@ -4,8 +4,11 @@ Demo: http://jakob-stoeck.github.io/tractor-trailer-planner/
 
 ## Running locally
 
-```
+You need to install node.js first.
+
+```bash
 $ npm install https://github.com/jakob-stoeck/tractor-trailer-planner/tarball/master
+$ cd node_modules/tractor-trailer-planner
 $ npm start
 ```
 
