@@ -63,6 +63,3 @@ window.config =
 	# 18 : 4513.988880
 	# 17 : 9027.977761
 	# 16 : 18055.955520
-	googleMaps:
-		key: ''
-		url: '/maps/api/staticmap'

@@ -36,25 +36,18 @@ window.map =
 	tmpY: 1
 	tmpTheta: 0
 	loadImage: (cb) ->
-			# jump between two 640px 21 zoom images
+		# jump between two 640px 21 zoom images
 		vertD = (0.000286*@jumpAt)/@tileSize
 		horiD = (0.00043*@jumpAt)/@tileSize
 		# flag to check whether the current tile matches the one in the last step
 		if @vert != @tmpVert || @hori != @tmpHori
 			@tmpVert = @vert
 			@tmpHori = @hori
-			p = {
-				center: [config.lat()-@vert*vertD,config.lon()+@hori*horiD].join()
-				zoom: 21
-				size: [@tileSize,@tileSize].join('x')
-				maptype: 'roadmap'
-				sensor: false
-				style: 'feature:all|element:labels|visibility:off'
-				key: config.googleMaps.key
-			}
+			center = [config.lat()-@vert*vertD,config.lon()+@hori*horiD].join()
 			@img.onload = cb
 			@img.crossOrigin = ''
-			@img.src = config.googleMaps.url + '?style=feature:road|visibility:off&' + $.param(p)
+			# @img.src = '/maps/' + 'style=feature:road|visibility:off&' + $.param(p) + '.png'
+			@img.src = '/maps/'+center+'.png'
 		else
 			cb()
 	drawImage: (deltaX, deltaY, x=0, y=0) ->

@@ -1,24 +1,17 @@
-# Motion Planning with a LIDAR
+# Aided maneuvering and parking assistance
 
-## Building
+Demo: http://jakob-stoeck.github.io/tractor-trailer-planner/
 
-You need node.js and coffeescript.
-
-```
-$ git clone git://github.com/jakob-stoeck/tractor-trailer-planner.git
-$ cd tractor-trailer-planner
-$ coffee -o build/ -c .
-```
-
-## Running
+## Running locally
 
 ```
-$ coffee server.coffee
+$ npm install https://github.com/jakob-stoeck/tractor-trailer-planner/tarball/master
+$ npm start
 ```
 
-Point your web browser to http://localhost:8080/
+Point your web browser to http://localhost:8080/, drive with arrow keys.
 
-## License
+## AGPL License
 
 Copyright (C) 2013  Jakob Stoeck
 

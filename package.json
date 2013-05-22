@@ -1,0 +1,28 @@
+{
+  "name": "tractor-trailer-planner",
+  "version": "1.0.0",
+  "author": "Jakob Stoeck <jakob.stoeck@cs.tum.edu>",
+  "description": "maneuvering and parking assistance for a semi-trailer",
+  "scripts": {
+    "start": "node ./server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jakob-stoeck/tractor-trailer-planner"
+  },
+  "keywords": [
+    "motion planning",
+    "lidar",
+    "truck"
+  ],
+  "dependencies" : {
+    "connect" :  "2.7.x"
+  },
+  "devDependencies": {
+    "mocha" : "1.10.x"
+  },
+  "license": "AGPL",
+  "engines": {
+    "node": ">=0.6"
+  }
+}
